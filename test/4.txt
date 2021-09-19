@@ -1,0 +1,46 @@
+Failed workflow: Someone other than the seller tries to transfer a listing.
+
+  1. createListing() called by seller to create lisiting for item "WoodenTable". "WoodenTable" is the item string stored off the blockchain:
+    Params: 
+      ID: 0
+      Name: table
+      Description: A sturdy wooden table
+      Price: 8000000000000000000 wei (8 ether)
+      Seller: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 
+
+    Return: 
+      void (nothing is returned)
+
+  2. listItems() called by buyer: 
+     Return: 
+      Listing()
+        ID: 0
+        Name: table
+        Description: A sturdy wooden table
+        Price: 8000000000000000000 wei (8 ether)
+        Seller: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 
+  
+  3. payable initiateSale() called by buyer:
+    Params:
+      ID: 0
+      Public key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCcTVSmUWPunddfFCUAsicFJdzcV6MVHFcji3JY5sxfVwImcXle8sphuo7vyybahR1DjSlOP+8Wnwjn84oeRCPgL5fIUMTLWR8883GDiW2400tEUxbFFa+P+JLcs9IqW3NTjSZgTZy46g8qZxPYly1PXP9493d6pQlEKTYUirIYIwIDAQAB
+    
+    Value: 
+      8000000000000000000 wei
+
+    Return:
+      void
+    
+    Event triggered: 
+      SaleIntiated()
+    
+  4. Another user (address: 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB) tries to call transferItem() for "WoodenTable":
+    Params:
+      ID: 0
+      Encrypted_message: ZiCgOtYv7o1JZJH4t6pLl0sD0cxRRQtTUNKKM1WGZ5f/z0Uuauv3PRkAOyAACOtQktYSizUWyi+NBYYH9vFI2TJvgcgqHzBLZGYlE0sVrcgIbTbSak+3SViHa1lTyDwETdIqXSPq5x2bnpaCbH7XHy/AQztJvYDFGxRXdGJgHXM=
+    
+    Return:
+      void 
+
+    Error Log: 
+      The transaction has been reverted to the initial state. Reason provided by the contract: "Can only be called by seller".

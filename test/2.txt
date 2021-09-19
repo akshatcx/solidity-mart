@@ -1,0 +1,40 @@
+Failed workflow: Buyer tries to pay incorrect amount
+
+  1. createListing() called by seller to create lisiting for item "WoodenTable". "WoodenTable" is the item string stored off the blockchain:
+    Params: 
+      ID: 0
+      Name: table
+      Description: A sturdy wooden table
+      Price: 8000000000000000000 wei (8 ether)
+      Seller: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 
+
+    Return: 
+      void (nothing is returned)
+
+  2. listItems() called by buyer: 
+     Return: 
+      Listing()
+        ID: 0
+        Name: table
+        Description: A sturdy wooden table
+        Price: 8000000000000000000 wei (8 ether)
+        Seller: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4 
+  
+  3. payable initiateSale() called by buyer:
+    Params:
+      ID: 0
+      Public key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCcTVSmUWPunddfFCUAsicFJdzcV6MVHFcji3JY5sxfVwImcXle8sphuo7vyybahR1DjSlOP+8Wnwjn84oeRCPgL5fIUMTLWR8883GDiW2400tEUxbFFa+P+JLcs9IqW3NTjSZgTZy46g8qZxPYly1PXP9493d6pQlEKTYUirIYIwIDAQAB
+    
+    Value: 
+      2000000000000000000 wei
+
+    Return:
+      void
+    
+    Error Log:
+      transact to SolidityMart.initiateSale errored: VM error: revert.
+
+      revert
+	      The transaction has been reverted to the initial state. Reason provided by the contract: "Payment value not equal".
+  
+  
