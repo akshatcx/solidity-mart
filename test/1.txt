@@ -44,7 +44,7 @@ Successful workflow
      Event triggered:
       ItemTransferred()
 
-  5. The buyer responds to the ItemTransferred event by calling releaseFunds() to finally tranfer the ether to seller:
+  5. The buyer responds to the ItemTransferred event by calling releaseFunds() to finally transfer the ether to seller:
      Params: 
       ID: 0
      Event triggered:

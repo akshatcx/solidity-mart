@@ -96,7 +96,7 @@ contract SolidityMart {
      * @param _id ID of the item sold
      */
     function releaseFunds(uint _id) public {
-        address payable _seller = payable(listings[_id].seller);
+        address payable _seller = address(uint160((listings[_id].seller)));
         _seller.transfer(listings[_id].price);
         emit FundsReleased(_id);
     }
