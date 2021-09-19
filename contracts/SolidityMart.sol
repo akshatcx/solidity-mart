@@ -25,7 +25,7 @@ contract SolidityMart {
     function createListing(string memory _name, string memory _description, uint _price) public {
         require(_price>=0, "Price should be non-negative");
         uint id = total_listings;
-        listings.push(Listing(id, _name, _description, _price, msg.sender, true));
+        listings.push(Listing(id, _name, _description, _price, payable(msg.sender), true));
         total_listings++;
         emit NewListing(id, _name, _description, _price, msg.sender);
     }
