@@ -80,8 +80,6 @@ contract SolidityMart {
         emit SaleInitiated(_id, _buyer_public_key);
     }
 
-    // To be called by seller after hearing SaleInitiated event.
-    // Seller will encrypt item using buyers public key and call this to get funds.
     /**
      * @dev To be called by seller on hearing a SaleInitiated() event. Emits a ItemTransferred() event which provides the encrypted string to the buyer (or anyone else listening)
      * @param _id ID of the item to be transferred
@@ -93,8 +91,6 @@ contract SolidityMart {
         emit ItemTransferred(_id, _encrypted_item);
     }
 
-    // To be called by the buyer after hearing ItemTransferred event.
-    // Buyer will 
     /**
      * @dev To be called by buyer on hearing a ItemTransferred() event to confirm that item received is correct and release funds to seller.
      * @param _id ID of the item sold
