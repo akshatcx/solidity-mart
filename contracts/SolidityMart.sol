@@ -3,9 +3,11 @@ pragma solidity ^0.4.0;
 contract SolidityMart {
 
     uint total_listings = 0;
+
     event NewListing(uint listingId, string name, string description, uint price, address seller);
     event SaleInitiated(uint listingId, string buyer_public_possible);
     event ItemTransferred(uint listingId, string encrypted_item);
+    event FundReleased(uint listingId);
 
     struct Listing {
         uint listing_id;
@@ -18,7 +20,7 @@ contract SolidityMart {
 
     Listing[] public listings;
 
-    function createListing(string memory _name, string memory _description, uint _price, string memory _item) public {
+    function createListing(string memory _name, string memory _description, uint _price) public {
         require(_price>=0, "Price should be non-negative");
         id = total_listings;
         listings.push(Listing(id, _name, _description, _price, msg.sender, true));
@@ -27,13 +29,13 @@ contract SolidityMart {
     }
 
     function listItems() public view returns (Listing[] memory) {
-        Listing[] _available;
+        Listing[] available;
         for (uint i=0;i<total_listings;i++){
             if(listings[i].available){
-                _available.push(listings[i]);
+                available.push(listings[i]);
             }
         }
-        return _unsold;
+        return available;
     }
 
     // To be called by buyer to initiate the sale.
@@ -50,10 +52,13 @@ contract SolidityMart {
     // Seller will encrypt item using buyers public key and call this to get funds.
     function transferItem(uint _id, string memory _encrypted_item) public {
         require(listings[_id].seller == msg.sender, "Can only be called by seller");
-        require(buyer_keys[_id], "Sale not yet initiated");
-
-        listings[_id].seller.transfer(listings[_id].price);
         emit ItemTransferred(_id, _encrypted_item);
     }
 
+    // To be called by the buying after hearing ItemTransferred event.
+    // Buyer will confirm that item received is correct and release funds to seller.
+    function releaseFunds(uint _id) public {
+        listings[_id].seller.transfer(listings[_id].price);
+        emit FundsReleased(_id);
+    }
 }
