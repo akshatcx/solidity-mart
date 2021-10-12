@@ -20,7 +20,7 @@ contract SolidityMart {
     
     event NewListing(uint listingId, string name, string description, uint price, address seller); 
     event SaleInitiated(uint listingId, string buyer_public_possible); ///< Event alerting the buyer about a valid buy request
-    event ItemTransferred(uint listingId, string encrypted_item); //</ Event denoting that the item has been delivered to buyer
+    event ItemTransferred(uint listingId, string encrypted_item); ///< Event denoting that the item has been delivered to buyer
     event FundsReleased(uint listingId); ///< Event denoting that funds have been transferred to seller
     
     /*! Struct for storing all the data related to a listing */

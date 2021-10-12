@@ -1,4 +1,4 @@
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity >=0.4.0 <0.9.0;
 
 /* Auction strats:
     0: First Price Sealed-Bid Auction
@@ -6,17 +6,17 @@ pragma solidity >=0.7.0 <0.9.0;
     2: Average Price Sealed-Bid Auction
 */
 
-contract Factory{
-    Auction[] public auctions;
-
-    event AuctionCreated(address autionAddress, string name, uint _strat);
-    
-    function createAuction(string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) external {
-       Auction auction = new Auction(auctions.length, _name, _basePrice, _bidDuration, _revealDuration, _strat);
-       auctions.push(auction);
-       emit AuctionCreated(address(auction), _name, _strat);
-     }
-}
+//contract Factory{
+//    Auction[] public auctions;
+//
+//    event AuctionCreated(address autionAddress, string name, uint _strat);
+//    
+//    function createAuction(string calldata _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) external {
+//       Auction auction = new Auction(auctions.length, _name, _basePrice, _bidDuration, _revealDuration, _strat);
+//       auctions.push(auction);
+//       emit AuctionCreated(address(auction), _name, _strat);
+//     }
+//}
 
 contract Auction { 
     uint public index;
@@ -39,16 +39,26 @@ contract Auction {
     event ClaimInitiated(string _public_key);
     event ItemTransferred(string _encrypted_item);
     
-    constructor (uint _index, string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) {
+    constructor() public {
+        index = 0;
+        name = "OK";
+        strat = 0;
+        basePrice = 0;
+        bidEnd = 0;
+        revealEnd = 0;
+        seller = msg.sender;
+    }
+    /*
+    constructor (uint _index, string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) public{
         index = _index;
         name = _name;
         strat = _strat;
         basePrice = _basePrice;
         bidEnd = block.timestamp + _bidDuration;
         revealEnd = bidEnd + _revealDuration;
-        seller = payable(msg.sender);
+        seller = msg.sender;
     }
-    
+   */ 
     function bid(bytes32 hash) public payable {
         require(block.timestamp < bidEnd, "Bidding period has expired");
         require(hashedBids[msg.sender] == bytes32(0x0), "Only one bid per address allowed");
@@ -93,7 +103,7 @@ contract Auction {
         require(block.timestamp >= revealEnd, "Revealing period is yet to expire");
         uint amount = balances[msg.sender];
         balances[msg.sender] = 0;
-        payable(msg.sender).transfer(amount);
+        msg.sender.transfer(amount);
     }
     
     function initiateClaim(string memory _public_key) public {
