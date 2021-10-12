@@ -57,7 +57,7 @@ class ListItems extends React.Component {
                   {
                     inp?
                     inp.map((row, index) => {
-                    // console.log(row)
+                    console.log(row)
                     return (
                       <tr>
                       <td>{row[1]}</td>

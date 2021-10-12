@@ -7815,12 +7815,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x9Ce7566D60995423e9C3410dBa3014552AB0a8CA",
-      "transactionHash": "0x0fe3bd35cad5e29a40f8220f0eeee09b36bcb1ee1109ac39def2608c21a98b6c"
+      "address": "0x992b6F21B0918F5a56c00914E72B40C235Ef63Ac",
+      "transactionHash": "0xda128886703f6bbe61e2b933711786e28a8ec2da382e71854d586e660d13988f"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-10-12T12:23:35.866Z",
+  "updatedAt": "2021-10-12T15:41:53.100Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "Akshat Chajjer, Shivansh Seth, Istasis Mishra",

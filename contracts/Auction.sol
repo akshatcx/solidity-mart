@@ -20,7 +20,7 @@ pragma solidity >=0.4.0 <0.9.0;
 
 contract Auction { 
     uint public index;
-    
+
     address payable seller;
     uint strat;
     string public name;

@@ -40,88 +40,39 @@ class ListingForm extends React.Component {
     } = this.props;
   }
 
-  // handleChange(event) {
-  //   const target = event.target;
-  //   // console.log(target)
-  //   const value = target.type === 'checkbox' ? target.checked : target.value;
-  //   const name = target.name;
+  handleChange(event) {
+    const target = event.target;
+    // console.log(target)
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
 
-  //   this.setState({
-  //     [name]: value
-  //   });
-  // }
+    this.setState({
+      [name]: value
+    });
+  }
 
-  // handleSubmit(event) {
-  //   event.preventDefault();
-  //   const {
-  //     drizzle,
-  //     drizzleState
-  //   } = this.props;
-  //   const contract = drizzle.contracts.SolidityMart;
-  //   const {
-  //     itemName,
-  //     itemDescription,
-  //     itemPrice
-  //   } = this.state
-  //   const stackId = contract.methods['createListing'].cacheSend(itemName, itemDescription, itemPrice, {
-  //     from: drizzleState.accounts[0]
-  //   });
-  //   this.setState({
-  //     stackId: stackId
-  //   });
-  // }
+  handleSubmit(event) {
+    event.preventDefault();
+    const {
+      drizzle,
+      drizzleState
+    } = this.props;
+    const contract = drizzle.contracts.SolidityMart;
+    const {
+      itemName,
+      itemDescription,
+      itemPrice
+    } = this.state
+    const stackId = contract.methods['createListing'].cacheSend(itemName, itemDescription, itemPrice, {
+      from: drizzleState.accounts[0]
+    });
+    this.setState({
+      stackId: stackId
+    });
+  }
 
   render() {
     return (
-      // <Form onSubmit={this.handleSubmit}>
-      //       <Form.Group className="mb-3" name="itemName">
-      //         <Form.Control 
-      //           type="text" 
-      //           placeholder="Item name" 
-      //           value={this.state.itemName} 
-      //           onChange={this.handleChange}
-      //           name="itemName"
-      //         />
-
-      //       </Form.Group>
-
-      //       <Form.Group className="mb-3" name="itemDescription">
-      //         <Form.Control 
-      //           as="textarea"
-      //           placeholder="Description" 
-      //           rows={3} 
-      //           value={this.state.itemDescription}
-      //           onChange={this.handleChange}
-      //           name="itemDescription"
-      //         />
-      //       </Form.Group>
-      //       <Form.Group className="mb-3" name="itemPrice">
-      //         <Form.Label>Item Price (ETH)</Form.Label>
-      //         <Form.Control type="number" value={this.state.itemPrice} onChange={this.handleChange} name="itemPrice"/>
-      //       </Form.Group>
-      //       <Form.Label>Listing/Auction Type</Form.Label>
-      //       <Form.Select name="auctionType" value={this.state.auctionType} onChange={this.handleChange}>
-      //         <option value="Listing">Regular Listing</option>
-      //         <option value="FPSB">First price sealed-bid auction</option>
-      //         <option value="Vickrey">Vickrey auction</option>
-      //         <option value="Average">Average auction</option>
-      //       </Form.Select>
-      //       {this.state.auctionType != "Listing"?
-      //       <Form.Group class="mb-3" name="biddingTime">
-      //         <Form.Label>Bidding Time (Seconds)</Form.Label>
-      //         <Form.Control type="number" value={this.state.bindingTime} onChange={this.handleChange}/>
-      //       </Form.Group>
-      //       : ""}
-      //       {this.state.auctionType != "Listing"?
-      //       <Form.Group class="mb-3" name="revealTime">
-      //         <Form.Label>Reveal Time (Seconds)</Form.Label>
-      //         <Form.Control type="number" value={this.state.revealTime} onChange={this.handleChange}/>
-      //       </Form.Group>
-      //       : ""}
-      //       <Button variant="primary" type="submit">
-      //         Submit
-      //       </Button>
-      //     </Form> 
       <
       ContractForm contract = "SolidityMart"
       method = "createListing"
