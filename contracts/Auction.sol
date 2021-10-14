@@ -46,7 +46,7 @@ contract Auction {
         basePrice = 0;
         bidEnd = 0;
         revealEnd = 0;
-        seller = msg.sender;
+        seller = address(uint160(msg.sender));
     }
     /*
     constructor (uint _index, string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) public{
