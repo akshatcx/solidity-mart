@@ -11,7 +11,7 @@ contract Listing {
     string name;
     string description;
     uint price;
-    address payable seller;
+    address seller;
     string buyer_public_key;
     string encrypted_item;
     State state;
@@ -47,7 +47,9 @@ contract Listing {
         require(msg.sender == seller, "Can only be called by seller");
         require(state == State.RECEIVED, "Sale not yet RECEIVED by seller");
         encrypted_item = _encrypted_item;
-        seller.transfer(price);    
+
+        address payable payable_seller = address(uint160(seller));
+        payable_seller.transfer(price);    
         state = State.SOLD;
     }
 
