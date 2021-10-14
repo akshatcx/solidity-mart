@@ -25,11 +25,15 @@ contract Listing {
         state = State.LISTED;
     }
 
+    function getSummary() public view returns (string memory, string memory, uint, address, string memory , string memory, State){
+        return (name, description, price, seller, buyer_public_key, encrypted_item, state);
+    } 
+
     function initiateSale(string memory _buyer_public_key) public payable{
         require(state == State.LISTED, "Item not available");
         require(msg.value == price, "Incorrect payment value");
         buyer_public_key = _buyer_public_key;
-        state = State.LISTED;
+        state = State.INITIATED;
     }
 
     function getBuyerKey() public returns (string memory) {
