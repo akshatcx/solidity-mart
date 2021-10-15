@@ -29,13 +29,13 @@ contract Auction {
     address[] bidAddrs;
     
 
-    constructor(string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) public {
+    constructor(string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat, address payable _seller) public {
         name = _name;
         strat = _strat;
         basePrice = _basePrice;
         bidEnd = block.timestamp + _bidDuration;
         revealEnd = bidEnd + _revealDuration;
-        seller = address(uint160(msg.sender));
+        seller = _seller;
         noBids = 0;
         winAmount = 0;    
     }

@@ -30,7 +30,7 @@ contract SolidityMart {
         2: Average Price Sealed-Bid Auction
     */
     function createAuction(string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat) public {
-        Auction newAuction = new Auction(_name, _basePrice, _bidDuration, _revealDuration, _strat);
+        Auction newAuction = new Auction(_name, _basePrice, _bidDuration, _revealDuration, _strat, msg.sender);
         auctions.push(address(newAuction));
         total_auctions++;
     }

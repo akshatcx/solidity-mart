@@ -13,11 +13,11 @@ import { DrizzleContext } from '@drizzle/react-plugin'
 // setup drizzle
 // import Auction from "./artifacts/Auction.json";
 import SolidityMart from "./artifacts/SolidityMart.json";
-import Listing from "./artifacts/Listing.json";
-
+// import Listing from "./artifacts/Listing.json";
+// import Auction from "./artifacts/Auction.json";
 
 const doptions = {
-  contracts: [SolidityMart, Listing],
+  contracts: [SolidityMart],
   web3: {
     fallback: {
       type: "ws",
@@ -27,6 +27,7 @@ const doptions = {
 };
 const drizzle = new Drizzle(doptions, store);
 
+console.log(drizzle)
 // console.log(typeof(drizzle.contracts))
 ReactDOM.render(
   <React.StrictMode>
