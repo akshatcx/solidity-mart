@@ -15,19 +15,12 @@ import {
   Accordion,
   Alert
 } from "react-bootstrap";
-import {
-  ContractForm,
-  ContractData
-} from "@drizzle/react-components"
 
 import Listing from '../artifacts/Listing.json'
-const keypair = require('keypair')
+const { soliditySha3 } = require("web3-utils");
+const crypto = require("crypto");
 
-/**
- * 
- */
-
-class Buy extends React.Component {
+class Row extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -37,9 +30,9 @@ class Buy extends React.Component {
       publicKey: null,
       privateKey: null,
       transactionState: 0, // 0 -> not initiated, 1 -> initiated, waiting for response, 2 -> requested but not transferred by seller
-      product: null, 
+      product: null,
     }
-    this.genKeyPair = this.genKeyPair.bind(this)
+    // console.log('HERE')
     this.getProduct = this.getProduct.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
@@ -51,34 +44,11 @@ class Buy extends React.Component {
       .then(res => {
         res = Object.values(res)
         console.log(res)
-        this.setState({ res: res, transactionState: res[6]})
-        if (!this.state.publicKey) 
-          this.setState({publicKey: res[4]})
+        this.setState({ res: res, transactionState: res[6] })
+        if (!this.state.publicKey)
+          this.setState({ publicKey: res[4] })
       });
     web3.eth.Contract.defaultAccount = this.props.drizzleState.accounts[0]
-  }
-
-  genKeyPair() {
-    if (!this.state.publicKey) {
-      console.log('generating keys...')
-      const kp = keypair()
-      if (kp) {
-        // console.log(kp.public)
-        this.setState({ publicKey: kp.public, privateKey: kp.private })
-        const {
-          drizzle,
-          drizzleState
-        } = this.props;
-        console.log(this.state.res[2])
-        this.contract.methods.initiateSale(kp.public).send({
-          from: drizzleState.accounts[0],
-          value: this.state.res[2]
-        })
-          .then(() => {
-            this.setState({ transactionState: 1 })
-          })
-      }
-    }
   }
 
   getProduct(e) {
@@ -91,10 +61,10 @@ class Buy extends React.Component {
       this.contract.methods.getItem().call()
         .then(res => {
           console.log(res)
-          this.setState({transactionState: 3, product: res})
+          this.setState({ transactionState: 3, product: res })
         })
         .catch(res => {
-          this.setState({transactionState: 2})
+          this.setState({ transactionState: 2 })
         })
     }
   }
@@ -114,7 +84,9 @@ class Buy extends React.Component {
     if (!this.state.res) {
       return "Fetching..."
     }
-    if (this.state.res[6] == 2) return ""
+    console.log(this.state.res[3], this.props.drizzleState.accounts[0])
+    console.log(this.props.drizzleState.accounts)
+    if (this.state.res[3] != this.props.drizzleState.accounts[0]) return ""
     return (
       <tr>
         <td>{this.state.res[0]}</td>
@@ -165,7 +137,7 @@ class Buy extends React.Component {
                   </div>
                 }
                 {
-                  this.state.transactionState == 2 && 
+                  this.state.transactionState == 2 &&
                   <div>Waiting for seller to transfer the product ...</div>
                 }
                 {
@@ -186,7 +158,7 @@ class Buy extends React.Component {
 
 }
 
-class ListItems extends React.Component {
+class Seller extends React.Component {
   constructor(props) {
     super(props)
     this.contracts = this.props.drizzle.contracts;
@@ -242,7 +214,7 @@ class ListItems extends React.Component {
               !displayData ? "YEET" :
                 Object.keys(displayData)
                   .map(element => (
-                    <Buy drizzle={this.props.drizzle} drizzleState={this.props.drizzleState} address={displayData[element]} />
+                    <Row drizzle={this.props.drizzle} drizzleState={this.props.drizzleState} address={displayData[element]} />
                   )
                   )
             }
@@ -252,4 +224,4 @@ class ListItems extends React.Component {
     )
   }
 }
-export default ListItems;
+export default Seller;

@@ -10,10 +10,6 @@ import {
   Form,
   Button
 } from "react-bootstrap";
-import {
-  ContractForm,
-  ContractData
-} from "@drizzle/react-components"
 
 /**
  * 
@@ -22,22 +18,18 @@ class ListingForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      itemId: 0,
       itemName: "",
-      itemDecription: "",
+      itemDescription: "",
       itemPrice: 0,
       bindingTime: 0,
       revealTime: 0,
       stackId: 0,
       auctionType: "Listing",
     }
-    // this.handleChange = this.handleChange.bind(this)
-    // this.handleSubmit = this.handleSubmit.bind(this)
-  }
-
-  componentDidMount() {
-    const {
-      drizzle
-    } = this.props;
+    // this.contracts = context.drizzle.contracts;
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleChange(event) {
@@ -63,7 +55,8 @@ class ListingForm extends React.Component {
       itemDescription,
       itemPrice
     } = this.state
-    const stackId = contract.methods['createListing'].cacheSend(itemName, itemDescription, itemPrice, {
+    console.log(drizzleState.accounts[0])
+    const stackId = contract.methods.createListing(itemName, itemDescription, itemPrice).send({
       from: drizzleState.accounts[0]
     });
     this.setState({
@@ -73,42 +66,50 @@ class ListingForm extends React.Component {
 
   render() {
     return (
-      <
-      ContractForm contract = "SolidityMart"
-      method = "createListing"
-      render = {
-        (inp) => {
-          const { inputs, inputTypes, state, handleInputChange, handleSubmit } = inp
-          return ( 
-            <Form onSubmit={handleSubmit}>
-            {  
-              inputs.map((input, index) => {
-                var inputType = inputTypes[index];
-                var inputLabel = input.name;
-                // check if input type is struct and if so loop out struct fields as well
-                return (
-                  <Form.Group>
-                  <Form.Control
-                    key={input.name}
-                    type={inputType}
-                    name={input.name}
-                    value={this.state[input.name]}
-                    placeholder={inputLabel}
-                    onChange={handleInputChange}
-                  />
-                  </Form.Group>
-                )
-              })
-            }
-            <Button type="submit">
-              Submit
-            </Button>
-            </Form>
-          );
-        }
-      }
-      />
-    )
+      <Container>
+        <br></br>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Group className='mb3'>
+            <Form.Label>Item Name:</Form.Label>
+            <Form.Control
+              key='itemName'
+              type='text'
+              name='itemName'
+              value={this.state['itemName']}
+              placeholder='Enter product name'
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+
+          <Form.Group className='mb3'>
+            <Form.Label>Item Description:</Form.Label>
+            <Form.Control
+              key='itemDescription'
+              type='textArea'
+              name='itemDescription'
+              value={this.state['itemDescription']}
+              placeholder='Enter product description'
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+
+          <Form.Group className='mb3'>
+            <Form.Label>Item Price (Wei):</Form.Label>
+            <Form.Control
+              key='itemPrice'
+              type='number'
+              name='itemPrice'
+              value={this.state['itemPrice']}
+              placeholder='Enter product price (WEI)'
+              onChange={this.handleChange}
+            />
+          </Form.Group>
+          <br/>
+          <Button type="submit">
+            Submit
+          </Button>
+        </Form></Container>
+    );
   }
 }
 export default ListingForm;

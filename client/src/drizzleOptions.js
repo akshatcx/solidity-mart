@@ -1,11 +1,11 @@
 import { Drizzle } from "@drizzle/store";
-import MyStringStore from "./contracts/MyStringStore.json";
-import Auction from "./contracts/Auction.json";
-import SolidityMart from "./contracts/SolidityMart.json";
+import Auction from "./artifacts/Auction.json";
+import SolidityMart from "./artifacts/SolidityMart.json";
+import Listing from "./artifacts/Listing.json";
 
 
 const options = {
-  contracts: [MyStringStore, Auction, SolidityMart],
+  contracts: [SolidityMart, Listing],
   web3: {
     fallback: {
       type: "ws",

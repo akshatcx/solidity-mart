@@ -16,12 +16,12 @@ contract Listing {
     string encrypted_item;
     State state;
 
-    constructor(string memory _name, string memory _description, uint _price) public {
+    constructor(string memory _name, string memory _description, uint _price, address sender) public {
         require(_price>=0, "Price should be non-negative");
         name = _name;
         description = _description;
         price = _price;
-        seller = address(uint160(msg.sender));
+        seller = address(uint160(sender));
         state = State.LISTED;
     }
 

@@ -14,7 +14,7 @@ contract SolidityMart {
     address[] auctions;
 
     function createListing(string memory _name, string memory _description, uint _price) public {
-        Listing newListing = new Listing(_name, _description, _price);
+        Listing newListing = new Listing(_name, _description, _price, msg.sender);
         listings.push(address(newListing));
         total_listings++;
     }
