@@ -1,28 +1,14 @@
 import React from 'react';
 import {
-  Tabs,
-  Tab,
-  Navbar,
-  Nav,
   Container,
-  FormControl,
-  FormGroup,
   Form,
   Button,
   Table,
-  Card,
-  AccordionButton,
   Accordion,
-  Alert
 } from "react-bootstrap";
-import {
-  ContractForm,
-  ContractData
-} from "@drizzle/react-components"
 import LoadingOverlay from 'react-loading-overlay'
 import Listing from '../artifacts/Listing.json'
 const keypair = require('keypair')
-const crypto = require("crypto");
 
 class Buy extends React.Component {
   constructor(props) {

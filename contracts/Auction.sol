@@ -18,14 +18,17 @@ contract Auction {
     string name;
     uint basePrice;
     uint bidEnd;
-    uint revealEnd;
+    uint public revealEnd;
     uint noBids;
     uint winAmount;
     address winner;
     string encrypted_item;
-
+    uint auctionStart;
+    uint bidDuration;
+    uint revealDuration;
     mapping(address => uint) public balances;
     mapping(address => Bid) public addrToBid;
+    uint public state; // 0 -> ongoing, 1 -> reveal period, 2 -> Over, 3 -> Ended, 4 -> transferred 
     address[] bidAddrs;
     
 
@@ -33,10 +36,13 @@ contract Auction {
         name = _name;
         strat = _strat;
         basePrice = _basePrice;
+        auctionStart = block.timestamp;
         bidEnd = block.timestamp + _bidDuration;
         revealEnd = bidEnd + _revealDuration;
         seller = _seller;
         noBids = 0;
+        bidDuration = _bidDuration;
+        revealDuration = _revealDuration;
         winAmount = 0;    
     }
 
@@ -54,7 +60,7 @@ contract Auction {
     function reveal(uint _amount) public {
         require(block.timestamp >= bidEnd, "Revealing period is yet to start");
         require(block.timestamp < revealEnd, "Revealing period has expired");
-        require(keccak256(abi.encodePacked(_amount)) == addrToBid[msg.sender].hashedBid); //sha3
+        require(keccak256(abi.encodePacked(_amount)) == addrToBid[msg.sender].hashedBid, 'Hash not equal'); //sha3
         require(_amount >= basePrice, "Bid should not be less than base price");
         require(_amount <= balances[msg.sender], "Bid less than deposit amount");
 
@@ -129,8 +135,12 @@ contract Auction {
         return encrypted_item;
     }    
 
-    function getSummart() public view returns (string memory, uint, uint, uint, uint, uint, address) {
-        return (name, basePrice, bidEnd, revealEnd, strat, noBids, seller);
+    function getSummary() public view returns (string memory, uint, uint, uint, uint, uint, uint, address) {
+        return (name, basePrice, auctionStart, bidEnd, revealEnd, strat, noBids, seller, state);
+    }
+
+    function alreadyBid(address bidder) public view returns (bool) {
+        return (addrToBid[bidder].hashedBid != bytes32(0x0));
     }
 }
 

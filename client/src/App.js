@@ -1,14 +1,13 @@
 import React from 'react';
 import './App.css';
-import ReadString from "./ReadString";
-import SetString from "./SetString";
-import { Tabs, Tab, Navbar, Nav, Container, FormControl, FormGroup, Form, Button } from "react-bootstrap";
-import { ContractForm, ContractData } from "@drizzle/react-components"
 import ListingForm from './components/ListingForm';
 import ListItems from './components/ListItems';
 import ListingSeller from './components/ListingSeller';
+import AuctionForm from './components/AuctionForm';
 import NavBar from './components/NavBar';
-import { Route, Switch } from 'react-router-dom';
+import ListAuction from './components/ListAuction';
+import { Route } from 'react-router-dom';
+import AuctionSeller from './components/AuctionSeller';
 // import options from './drizzleOptions';
 // import store from './middleware'
 class App extends React.Component {
@@ -45,7 +44,10 @@ class App extends React.Component {
         <NavBar></NavBar>
         <Route exact path="/" render={props=> <ListItems drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
         <Route exact path="/list" render={props=> <ListingForm drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
+        <Route exact path="/auctionlist" render={props=> <ListAuction drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
+        <Route exact path="/auction" render={props=> <AuctionForm drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
         <Route exact path="/seller" render={props=> <ListingSeller drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
+        <Route exact path="/auctionseller" render={props=> <AuctionSeller drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
       </div>
     );
   }

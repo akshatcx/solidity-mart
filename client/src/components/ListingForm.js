@@ -1,19 +1,10 @@
 import React from 'react';
 import {
-  Tabs,
-  Tab,
-  Navbar,
-  Nav,
   Container,
-  FormControl,
-  FormGroup,
   Form,
   Button
 } from "react-bootstrap";
 
-/**
- * 
- */
 class ListingForm extends React.Component {
   constructor(props) {
     super(props)

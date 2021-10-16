@@ -36,6 +36,6 @@ contract SolidityMart {
     }
     
     function getAuctions() public view returns (address[] memory) {
-        return listings;
+        return auctions;
     }
 }
