@@ -81,9 +81,9 @@ class Buy extends React.Component {
             // transactionState: 1,
             // publicKey: localStorage.getItem('publicKey'),
             // privateKey: localStorage.getItem('privateKey'),
-            bidValue: localStorage.getItem('bidValue'),
+            bidValue: localStorage.getItem('bidValue' + this.props.drizzleState.accounts[0]),
           })
-          if (localStorage.getItem('transactionState') !== null && this.state.transactionState != 4) this.setState({transactionState: localStorage.getItem('transactionState')})
+          if (localStorage.getItem('transactionState' + this.props.drizzleState.accounts[0]) !== null && this.state.transactionState != 4) this.setState({transactionState: localStorage.getItem('transactionState' + this.props.drizzleState.accounts[0])})
           console.log(this.state.transactionState)
         }
       })
@@ -152,10 +152,8 @@ class Buy extends React.Component {
           .then(() => {
             this.setState({ transactionState: 1, publicKey: kp.public, privateKey: kp.private })
             console.log(kp.private)
-            localStorage.setItem('privateKey', kp.private)
-            localStorage.setItem('publicKey', kp.public)
-            localStorage.setItem('bidValue', this.state.bidValue)
-            localStorage.setItem('transactionState', 1)
+            localStorage.setItem('bidValue' + this.props.drizzleState.accounts[0], this.state.bidValue)
+            localStorage.setItem('transactionState' + this.props.drizzleState.accounts[0], 1)
           })
           .catch(err => {
             console.log(err)
@@ -173,7 +171,7 @@ class Buy extends React.Component {
     })
       .then(() => {
         this.setState({ transactionState: 2 })
-        localStorage.setItem('transactionState', 2)
+        localStorage.setItem('transactionState' + this.props.drizzleState.accounts[0], 2)
       })
   }
 
@@ -198,7 +196,7 @@ class Buy extends React.Component {
         );
         console.log(product.toString())
         this.setState({ transactionState: 5, product: product.toString() })
-        localStorage.setItem('transactionState', 5)
+        localStorage.setItem('transactionState' + this.props.drizzleState.accounts[0], 5)
       })
       .catch(res => {
         console.log("Failed", res)

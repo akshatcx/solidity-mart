@@ -17921,7 +17921,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-13T13:02:52.661Z",
+  "updatedAt": "2021-11-13T13:55:43.449Z",
   "devdoc": {
     "author": "Akshat Chhajer, Shivansh Seth, Istasis Mishra",
     "details": "A smart contract to create and manage a single auction",

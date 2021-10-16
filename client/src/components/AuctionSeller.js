@@ -60,7 +60,7 @@ class Row extends React.Component {
           revealEnd: res[4],
           auctionType: auctionType
         })
-        if (localStorage.getItem('transactionStateS') !== null) this.setState({transactionState: localStorage.getItem('transactionStateS')})
+        if (localStorage.getItem('transactionStateS' + this.props.drizzleState.accounts[0]) !== null) this.setState({transactionState: localStorage.getItem('transactionStateS' + this.props.drizzleState.accounts[0])})
         if (revealDuration || bidDuration)
           this.timer = setInterval(this.countDown, 1000);
       });
@@ -94,8 +94,8 @@ class Row extends React.Component {
 
   transferItem(e) {
     e.preventDefault();
-    console.log(this.state.publicKey)
-    console.log("TRANSFERITEM");
+    // console.log(this.state.publicKey)
+    // console.log("TRANSFERITEM");
     const encryptedData = crypto.publicEncrypt(
       {
         key: this.state.publicKey,
@@ -130,7 +130,7 @@ class Row extends React.Component {
         })
         .then (res => {
           this.setState({ publicKey: res, transactionState: 2})
-          localStorage.setItem('transactionStateS', 2)
+          localStorage.setItem('transactionStateS' + this.props.drizzleState.accounts[0], 2)
         })
       })
   }
@@ -196,7 +196,6 @@ class Row extends React.Component {
       </tr>
     )
   }
-
 }
 
 class AuctionSeller extends React.Component {
@@ -253,7 +252,7 @@ class AuctionSeller extends React.Component {
           <tbody>
             {
               // "yeet"
-              !displayData ? "YEET" :
+              !displayData ? "" :
                 Object.keys(displayData)
                   .map(element => (
                     <Row drizzle={this.props.drizzle} drizzleState={this.props.drizzleState} address={displayData[element]} />

@@ -3134,12 +3134,12 @@
     "1337": {
       "events": {},
       "links": {},
-      "address": "0x5279b7b6ad3fC99ca02Ca550Db56DEb375247315",
-      "transactionHash": "0x9eab66c560e1a103acd634be4f9c7a679b3a18892b15f4a7aea938c03c8f9317"
+      "address": "0xbD49054242b8e757eEDCfd9eEb3f5daD4C456C31",
+      "transactionHash": "0x6baca57a0016b2d04e4e676f1c6c69f0fa394bbd4aec94afe9d18f586eac36eb"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-13T13:03:07.493Z",
+  "updatedAt": "2021-11-13T14:01:37.469Z",
   "networkType": "ethereum",
   "devdoc": {
     "author": "Akshat Chhajer, Shivansh Seth, Istasis Mishra",
