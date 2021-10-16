@@ -20,6 +20,11 @@ class Row extends React.Component {
       publicKey: null,
       privateKey: null,
       transactionState: 0, // 0 -> Runnning, 1 -> Over, 2 -> Over, ended but not transferred, 3 -> donzo
+      auctionStart: null,
+      bidEnd: null,
+      bidDurationR: null,
+      revealDurationR: null,
+      revealEnd: null,
     }
     // console.log('HERE')
     this.transferItem = this.transferItem.bind(this)
@@ -39,24 +44,23 @@ class Row extends React.Component {
       .then(res => {
         res = Object.values(res)
         var bidDuration = 0;
-        if (res[3] > now - res[2]) bidDuration = res[3] - (now - res[2]);
+        if (res[3] > now) bidDuration = res[3] - now;
         else bidDuration = 0;
-        // console.log(res[3], now - res[2], bidDuration)
-        var revealDuration = 0;
-        console.log(now > res[3]+ res[2], res[0])
-        if (now >= res[3] + res[2] )
-          revealDuration = res[4] - (now - (res[3] + res[2]))
-        if (revealDuration<0) revealDuration = 0
+        var revealDuration = res[4] - res[3];
+        if (now >= res[3])
+          revealDuration = res[4] - now;
+        if (revealDuration < 0) revealDuration = 0;
         var auctionType = this.auctionTypes[res[5]];
         this.setState({
           res: res,
           auctionStart: res[2],
           bidDurationR: bidDuration,
           revealDurationR: revealDuration,
-          bidDuration: res[3],
-          revealDuration: res[4],
+          bidEnd: res[3],
+          revealEnd: res[4],
           auctionType: auctionType
         })
+        if (localStorage.getItem('transactionStateS') !== null) this.setState({transactionState: localStorage.getItem('transactionStateS')})
         if (revealDuration || bidDuration)
           this.timer = setInterval(this.countDown, 1000);
       });
@@ -77,20 +81,20 @@ class Row extends React.Component {
   }
 
   countDown() {
-    var { auctionStart, bidDuration, revealDuration, bidDurationR, revealDurationR } = this.state;
-    // console.log('countDown')
+    var { auctionStart, bidEnd, revealEnd, bidDurationR, revealDurationR } = this.state;
+
     const date = new Date()
     const now = Math.round(date / 1000)
-    if (now >= auctionStart && now < auctionStart + bidDuration && bidDurationR > 0) bidDurationR -= 1;
-    else if (now <= auctionStart + bidDuration + revealDuration && revealDurationR > 0) revealDurationR -= 1
+    if (now >= auctionStart && now < bidEnd && bidDurationR > 0) bidDurationR -= 1;
+    else if (now <= revealEnd && revealDurationR > 0) revealDurationR -= 1
     else clearInterval(this.timer)
-    console.log(now >= auctionStart + bidDuration, now < auctionStart + bidDuration + revealDuration, revealDurationR)
+    console.log(now >= bidEnd, now < revealEnd, revealDurationR)
     this.setState({ revealDurationR: revealDurationR, bidDurationR: bidDurationR })
   }
 
   transferItem(e) {
     e.preventDefault();
-    // console.log(this.state.publicKey)
+    console.log(this.state.publicKey)
     console.log("TRANSFERITEM");
     const encryptedData = crypto.publicEncrypt(
       {
@@ -119,8 +123,15 @@ class Row extends React.Component {
       from: this.props.drizzleState.accounts[0],
     })
       .then(res => {
+        // res = Object.values(res)
         console.log('Winner picked', res)
-        this.setState({ publicKey: res, transactionState: 2})
+        this.contract.methods.getWinner().call({
+          from: this.props.drizzleState.accounts[0],
+        })
+        .then (res => {
+          this.setState({ publicKey: res, transactionState: 2})
+          localStorage.setItem('transactionStateS', 2)
+        })
       })
   }
 
@@ -145,7 +156,7 @@ class Row extends React.Component {
        <td>{this.state.res[0]}</td>
         <td>{this.state.res[1]}</td>
         <td>{this.state.bidDurationR ? this.secondsToTime(this.state.bidDurationR) : "Over"}</td>
-        <td>{this.state.revealDurationR == this.state.revealDuration ? "Not started" : !this.state.revealDurationR? "Over": this.secondsToTime(this.state.revealDurationR)}</td>
+        <td>{this.state.revealDurationR == this.state.revealEnd - this.state.bidEnd ? "Not started" : !this.state.revealDurationR? "Over": this.secondsToTime(this.state.revealDurationR)}</td>
         <td>{this.state.auctionType}</td>
         <td>{this.state.res[6]}</td> 
         <td>{!this.state.revealDurationR &&

@@ -17,7 +17,7 @@ contract SolidityMart {
     /**
      * @dev Constructor for the contract. Inits total_listings and total_auctions to 0
      */
-    constructor() {
+    constructor() public{
         total_listings = 0;
         total_auctions = 0;
     }

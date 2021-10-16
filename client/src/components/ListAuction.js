@@ -21,7 +21,7 @@ class Buy extends React.Component {
       res: null,
       publicKey: null,
       privateKey: null,
-      transactionState: 0, // 0 -> no bid made, 1 -> bid, waiting for reveal period, 2 -> reveal period, can reveal now, 3 -> revealed, waiting for product/winner
+      transactionState: 0, // 0 -> no bid made, 1 -> bid, waiting for reveal period, 2 -> reveal period, can reveal now, 3 -> revealed, waiting for product/winner, 4->transferred
       product: null,
       generatingKeys: false,
       auctionStart: null,
@@ -51,6 +51,7 @@ class Buy extends React.Component {
     this.contract.methods.getSummary().call()
       .then(res => {
         res = Object.values(res)
+        console.log(res)
         var bidDuration = 0;
         if (res[3] > now) bidDuration = res[3] - now;
         else bidDuration = 0;
@@ -69,6 +70,7 @@ class Buy extends React.Component {
           revealEnd: res[4],
           auctionType: auctionType
         })
+        if (res[8] == 4) this.setState({transactionState: 4})
         if (bidDuration)
           this.timer = setInterval(this.countDown, 1000);
       });
@@ -76,11 +78,13 @@ class Buy extends React.Component {
       .then(res => {
         if (res) {
           this.setState({
-            transactionState: 1,
-            publicKey: localStorage.getItem('publicKey'),
-            privateKey: localStorage.getItem('privateKey'),
+            // transactionState: 1,
+            // publicKey: localStorage.getItem('publicKey'),
+            // privateKey: localStorage.getItem('privateKey'),
             bidValue: localStorage.getItem('bidValue'),
           })
+          if (localStorage.getItem('transactionState') !== null && this.state.transactionState != 4) this.setState({transactionState: localStorage.getItem('transactionState')})
+          console.log(this.state.transactionState)
         }
       })
     web3.eth.Contract.defaultAccount = this.props.drizzleState.accounts[0]
@@ -100,14 +104,20 @@ class Buy extends React.Component {
   }
 
   countDown() {
-    var { auctionStart, bidEnd: bidDuration, revealEnd: revealDuration, bidDurationR, revealDurationR } = this.state;
+    var { auctionStart, bidEnd, revealEnd, bidDurationR, revealDurationR } = this.state;
 
     const date = new Date()
     const now = Math.round(date / 1000)
-    if (now >= auctionStart && now < auctionStart + bidDuration && bidDurationR > 0) bidDurationR -= 1;
-    else if (now <= auctionStart + bidDuration + revealDuration && revealDurationR > 0) revealDurationR -= 1
-    else clearInterval(this.timer)
-    console.log(now >= auctionStart + bidDuration, now < auctionStart + bidDuration + revealDuration, revealDurationR)
+    if (now >= auctionStart && now < bidEnd && bidDurationR > 0) bidDurationR -= 1;
+    else if (now <= revealEnd && revealDurationR > 0) {
+      bidDurationR = 0
+      revealDurationR -= 1
+    }
+    else {
+      revealDurationR = 0
+      clearInterval(this.timer)
+    }
+    console.log(now >= bidEnd, now < revealEnd, revealDurationR)
     this.setState({ revealDurationR: revealDurationR, bidDurationR: bidDurationR })
   }
 
@@ -140,12 +150,15 @@ class Buy extends React.Component {
           value: this.state.depositValue
         })
           .then(() => {
-            this.setState({ transactionState: 1, publicKey: kp.public, privateKey: kp.privateKey })
-            localStorage.setItem('privateKey', kp.privateKey)
-            localStorage.setItem('publicKey', kp.publicKey)
+            this.setState({ transactionState: 1, publicKey: kp.public, privateKey: kp.private })
+            console.log(kp.private)
+            localStorage.setItem('privateKey', kp.private)
+            localStorage.setItem('publicKey', kp.public)
             localStorage.setItem('bidValue', this.state.bidValue)
+            localStorage.setItem('transactionState', 1)
           })
           .catch(err => {
+            console.log(err)
             alert("Bid already made for this auction!")
             return
           })
@@ -160,6 +173,7 @@ class Buy extends React.Component {
     })
       .then(() => {
         this.setState({ transactionState: 2 })
+        localStorage.setItem('transactionState', 2)
       })
   }
 
@@ -183,11 +197,12 @@ class Buy extends React.Component {
           Buffer.from(res, 'hex')
         );
         console.log(product.toString())
-        this.setState({ transactionState: 3, product: product.toString() })
+        this.setState({ transactionState: 5, product: product.toString() })
+        localStorage.setItem('transactionState', 5)
       })
       .catch(res => {
         console.log("Failed", res)
-        this.setState({ transactionState: 1 })
+        this.setState({ transactionState: 4 })
       })
   }
 
@@ -213,7 +228,7 @@ class Buy extends React.Component {
         <td>{this.state.res[0]}</td>
         <td>{this.state.res[1]}</td>
         <td>{this.state.bidDurationR ? this.secondsToTime(this.state.bidDurationR) : "Over"}</td>
-        <td>{this.state.revealDurationR == this.state.revealEnd ? "Not started" : !this.state.revealDurationR? "Over": this.secondsToTime(this.state.revealDurationR)}</td>
+        <td>{this.state.revealDurationR == this.state.revealEnd - this.state.bidEnd ? "Not started" : !this.state.revealDurationR? "Over": this.secondsToTime(this.state.revealDurationR)}</td>
         <td>{this.state.auctionType}</td>
         <td>{this.state.res[6]}</td>
         <td>
@@ -278,11 +293,11 @@ class Buy extends React.Component {
                   )
                 }
                 {
-                  this.state.transactionState == 2 && "Waiting for auction to end"
+                  this.state.transactionState == 2 && "Waiting for seller to transfer"
                 }
                 {/* {this.state.transactionState == 0 && "Sending buy request..."} */}
                 {
-                  this.state.product == null && this.state.transactionState == 3 &&
+                  this.state.product == null && this.state.transactionState == 4 &&
                   <div>
                     {/* <strong>Click to recieve your product:  </strong> */}
                     <Form onSubmit={this.getProduct}>
@@ -307,11 +322,7 @@ class Buy extends React.Component {
                   </div>
                 }
                 {
-                  this.state.transactionState == 2 &&
-                  <div>Waiting for seller to transfer the product ...</div>
-                }
-                {
-                  this.state.transactionState == 3 && this.state.product &&
+                  this.state.transactionState == 5 && this.state.product &&
                   <div>
                     <strong>Product:</strong>
                     <br />

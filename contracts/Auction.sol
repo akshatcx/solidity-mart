@@ -146,8 +146,13 @@ contract Auction {
 
         // Return the winner's public key to the seller
         return addrToBid[winner].public_key;
+        state = 3;
     }
     
+    function getWinner() public view returns (string memory) {
+        require (msg.sender == seller, "Only seller can get the winner");
+        return addrToBid[winner].public_key;
+    }
     /**
      * @dev To be called by seller on hearing a SaleInitiated() event. Emits a ItemTransferred() event which provides the encrypted string to the buyer (or anyone else listening)
      * @param _encrypted_item Item string encrypted with the public key of the buyer
@@ -158,6 +163,7 @@ contract Auction {
         address payable payable_seller = address(uint160(seller));
         payable_seller.transfer(winAmount);    
         encrypted_item = _encrypted_item;
+        state = 4;
     }
 
     /**
