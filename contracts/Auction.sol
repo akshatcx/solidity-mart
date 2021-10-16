@@ -6,6 +6,11 @@ pragma solidity >=0.4.0 <0.9.0;
     2: Average Price Sealed-Bid Auction
 */
 
+/**
+ * @title Auction
+ * @author Akshat Chhajer, Shivansh Seth, Istasis Mishra
+  * @dev A smart contract to create and manage a single auction
+ */
 contract Auction { 
     struct Bid {
         bytes32 hashedBid;
@@ -28,7 +33,15 @@ contract Auction {
     mapping(address => Bid) public addrToBid;
     address[] bidAddrs;
     
-
+    /**
+     * @dev Constructor for the contract. Creates a new auction
+     * @param _name Name of the the listed item
+     * @param _basePrice Base price of the item
+     * @param _bidDuration Duration of the bid
+     * @param _revealDuration Duration of the reveal period
+     * @param _strat Auction strategy or format
+     * @param _seller Address of the person creating the listing
+    */ 
     constructor(string memory _name, uint _basePrice, uint _bidDuration, uint _revealDuration, uint _strat, address payable _seller) public {
         name = _name;
         strat = _strat;
@@ -40,6 +53,11 @@ contract Auction {
         winAmount = 0;    
     }
 
+    /**
+     * @dev To be called to place a bid
+     * @param _hash the hashed value of the bid amount to keep it secret
+     * @param _public_key Public key corresponding to the buyers private key. This key will be used by the seller to encrypt the item string before transfer. The encryption algorithm has to be decided beforehand (Test cases use RSA)
+    */
     function bid(bytes32 _hash, string memory _public_key) public payable {
         require(block.timestamp < bidEnd, "Bidding period has expired");
         require(addrToBid[msg.sender].hashedBid == bytes32(0x0), "Only one bid per address allowed");
@@ -51,6 +69,10 @@ contract Auction {
         noBids++;
     }
     
+    /**
+     * @dev To be called by the buyer to reveal the bid during bidding period
+     * @param _amount The actual bid amount
+    */
     function reveal(uint _amount) public {
         require(block.timestamp >= bidEnd, "Revealing period is yet to start");
         require(block.timestamp < revealEnd, "Revealing period has expired");
@@ -61,6 +83,10 @@ contract Auction {
         addrToBid[msg.sender].value = _amount;
     }
 
+    /**
+     * @dev To be called by seller to end the auction, 
+     * @return string (winners public key)
+    */ 
     function endAuction() public returns (string memory) {
         require(block.timestamp >= revealEnd, "Revealing period has not yet expired");
         require(msg.sender == seller, "Can only be called by seller");
@@ -116,6 +142,10 @@ contract Auction {
         return addrToBid[winner].public_key;
     }
     
+    /**
+     * @dev To be called by seller on hearing a SaleInitiated() event. Emits a ItemTransferred() event which provides the encrypted string to the buyer (or anyone else listening)
+     * @param _encrypted_item Item string encrypted with the public key of the buyer
+     */
     function transferItem(string memory _encrypted_item) public {
         require(block.timestamp >= revealEnd, "Revealing period is yet to expire");
         require(msg.sender == seller, "Only callable by seller");
@@ -124,12 +154,20 @@ contract Auction {
         encrypted_item = _encrypted_item;
     }
 
+    /**
+     * @dev To be called by buyer to receive the encypted item
+     * @return string
+     */
     function getItem() public view returns (string memory) {
         require(block.timestamp >= revealEnd, "Revealing period is yet to expire");
         return encrypted_item;
     }    
 
-    function getSummart() public view returns (string memory, uint, uint, uint, uint, uint, address) {
+    /**
+     * @dev Get a summary of the auction
+     * @return string, uint, uint, uint, uint, address 
+    */
+    function getSummary() public view returns (string memory, uint, uint, uint, uint, uint, address) {
         return (name, basePrice, bidEnd, revealEnd, strat, noBids, seller);
     }
 }
