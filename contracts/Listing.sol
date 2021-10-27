@@ -36,16 +36,15 @@ contract Listing {
         state = State.INITIATED;
     }
 
-    function getBuyerKey() public returns (string memory) {
+    function getBuyerKey() public view returns (string memory) {
         require(msg.sender == seller, "Can only be called by seller");
-        require(state == State.INITIATED, "Sale not yet INITIATED");
-        state = State.RECEIVED;
+        // require(state == State.INITIATED,"Sale not yet INITIATED");
         return buyer_public_key;
     }
 
     function transferItem(string memory _encrypted_item) public {
         require(msg.sender == seller, "Can only be called by seller");
-        require(state == State.RECEIVED, "Sale not yet RECEIVED by seller");
+        require(state == State.INITIATED, "Sale not yet RECEIVED by seller");
         encrypted_item = _encrypted_item;
 
         address payable payable_seller = address(uint160(seller));

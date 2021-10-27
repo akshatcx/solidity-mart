@@ -17,7 +17,6 @@ import {
 } from "react-bootstrap";
 
 import Listing from '../artifacts/Listing.json'
-const { soliditySha3 } = require("web3-utils");
 const crypto = require("crypto");
 
 class Row extends React.Component {
@@ -33,7 +32,7 @@ class Row extends React.Component {
       product: null,
     }
     // console.log('HERE')
-    this.getProduct = this.getProduct.bind(this)
+    this.transferItem = this.transferItem.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
 
@@ -43,30 +42,42 @@ class Row extends React.Component {
     this.contract.methods.getSummary().call()
       .then(res => {
         res = Object.values(res)
-        console.log(res)
-        this.setState({ res: res, transactionState: res[6] })
-        if (!this.state.publicKey)
-          this.setState({ publicKey: res[4] })
+        // console.log(res)
+        this.setState({ res: res, transactionState: res[6], publicKey: res[4] })
+        if (res[6] == 1) {
+          this.contract.methods.getBuyerKey().call({ from: this.props.drizzleState.accounts[0] })
+            .then(res => {
+              this.setState({ publicKey: res, transactionState: 2 })
+            });
+        }
       });
     web3.eth.Contract.defaultAccount = this.props.drizzleState.accounts[0]
   }
 
-  getProduct(e) {
+  transferItem(e) {
     e.preventDefault();
-    if (!this.state.dataKey) {
-      const {
-        drizzle, drizzleState
-      } = this.props;
-      this.drizzle = drizzle;
-      this.contract.methods.getItem().call()
-        .then(res => {
-          console.log(res)
-          this.setState({ transactionState: 3, product: res })
-        })
-        .catch(res => {
-          this.setState({ transactionState: 2 })
-        })
-    }
+    // console.log(this.state.publicKey)
+    console.log("TRANSFERITEM");
+    const encryptedData = crypto.publicEncrypt(
+      {
+        key: this.state.publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      Buffer.from(this.state.product)
+    ).toString('hex');
+    console.log(encryptedData)
+    this.contract.methods.transferItem(encryptedData).send({
+      from: this.props.drizzleState.accounts[0],
+    })
+      .then(res => {
+        console.log('ItemSent')
+        console.log(res)
+        this.setState({ transactionState: 3 })
+      })
+      .catch(res => {
+        console.log(res)
+      })
   }
 
   handleChange(event) {
@@ -84,81 +95,53 @@ class Row extends React.Component {
     if (!this.state.res) {
       return "Fetching..."
     }
-    console.log(this.state.res[3], this.props.drizzleState.accounts[0])
-    console.log(this.props.drizzleState.accounts)
-    if (this.state.res[3] != this.props.drizzleState.accounts[0]) return ""
+    if (this.state.res[3] != this.props.drizzleState.accounts[0] || this.state.transferState == 3) return ""
     return (
       <tr>
         <td>{this.state.res[0]}</td>
         <td>{this.state.res[1]}</td>
         <td>{this.state.res[2]}</td>
-        <td>
+        <td>{this.state.transactionState == 2 &&
           <Accordion>
             <Accordion.Item eventKey="0">
-              <Accordion.Header onClick={this.genKeyPair}>Buy</Accordion.Header>
+              <Accordion.Header>Transfer</Accordion.Header>
+
               <Accordion.Body>
                 {
-                  this.state.transactionState == 0 &&
-                  (
-
-                    <div>
-                      Click to copy your private key (store it safely):
-                      <Button onClick={() => { navigator.clipboard.writeText(this.state.privateKey) }}>Private Key</Button>
-                      <br />
-                      Click to copy your public key:
-                      <Button onClick={() => { navigator.clipboard.writeText(this.state.publicKey) }}>Public Key</Button>
-                    </div>
-                  )
-                }
-                {/* {this.state.transactionState == 0 && "Sending buy request..."} */}
-                {
-                  this.state.transactionState >= 1 &&
+                  this.state.transactionState == 2 &&
                   <div>
-                    {/* <strong>Click to recieve your product:  </strong> */}
-                    <Form onSubmit={this.getProduct}>
-                      {!this.state.privateKey &&
+                    <Form onSubmit={this.transferItem}>
+                      {this.state.publicKey &&
                         <Form.Group>
                           <Form.Label>
-                            Enter private key:
+                            Enter Product:
                           </Form.Label>
                           <Form.Control
-                            key='privateKey'
+                            key='product'
                             type='text'
-                            name='privateKey'
-                            value={this.state.privateKey}
-                            placeholder='Paste your private key here'
+                            name='product'
+                            value={this.state.product}
+                            placeholder='Enter your product string here'
                             onChange={this.handleChange}
                           />
                         </Form.Group>
                       }
-                      <Button type='submit'>Get Product</Button>
+                      <Button type='submit'>TransferProduct</Button>
                     </Form>
 
-                  </div>
-                }
-                {
-                  this.state.transactionState == 2 &&
-                  <div>Waiting for seller to transfer the product ...</div>
-                }
-                {
-                  this.state.transactionState == 3 &&
-                  <div>
-                    <strong>Product:</strong>
-                    <br />
-                    {this.state.product}
                   </div>
                 }
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
-        </td>
+        }</td>
       </tr>
     )
   }
 
 }
 
-class Seller extends React.Component {
+class ListingSeller extends React.Component {
   constructor(props) {
     super(props)
     this.contracts = this.props.drizzle.contracts;
@@ -224,4 +207,4 @@ class Seller extends React.Component {
     )
   }
 }
-export default Seller;
+export default ListingSeller;

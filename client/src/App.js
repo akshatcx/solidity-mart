@@ -6,7 +6,7 @@ import { Tabs, Tab, Navbar, Nav, Container, FormControl, FormGroup, Form, Button
 import { ContractForm, ContractData } from "@drizzle/react-components"
 import ListingForm from './components/ListingForm';
 import ListItems from './components/ListItems';
-import Seller from './components/Seller';
+import ListingSeller from './components/ListingSeller';
 import NavBar from './components/NavBar';
 import { Route, Switch } from 'react-router-dom';
 // import options from './drizzleOptions';
@@ -45,7 +45,7 @@ class App extends React.Component {
         <NavBar></NavBar>
         <Route exact path="/" render={props=> <ListItems drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
         <Route exact path="/list" render={props=> <ListingForm drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
-        <Route exact path="/seller" render={props=> <Seller drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
+        <Route exact path="/seller" render={props=> <ListingSeller drizzle={this.drizzle} drizzleState={this.drizzle.store.getState()} store={this.props.store}/>}/>
       </div>
     );
   }
